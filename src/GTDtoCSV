@@ -1,0 +1,131 @@
+#!/usr/bin/env python
+import optparse
+import os
+import platform
+import sys
+import codecs
+import datetime
+from dateutil.parser import parse
+import re
+import time
+import csv
+from UnicodeCSV import UTF8Recoder
+from UnicodeCSV import UnicodeReader
+from UnicodeCSV import UnicodeWriter
+import locale
+locale.setlocale(locale.LC_ALL, '' )
+
+def getDate(mstr):
+	try:
+		mdate = parse(mstr.strip())
+		return mdate
+	except Exception as inst:
+		return False
+
+def ExtractDate(line):
+	datepattern = re.compile(u"(on[\\s]+)(.+)$",re.U|re.I)
+	finddate = datepattern.search(line.strip())
+	linedate = ''
+	replacement = ''
+	if finddate != None:
+		replacement = finddate.group(0)
+		if getDate(finddate.group(2)) != False:
+			linedate = getDate(finddate.group(2)).strftime("%Y-%m-%d")
+	return {'date':linedate, 'replacement':replacement}
+
+def ExtractCategory(line):
+	pattern = re.compile(u"([@])([^\\s\\.;,:]+)",re.U)
+	category = ''
+	replacement = ''
+	findcategory = pattern.search(line)
+	if findcategory != None:
+		category = findcategory.group(2).replace('_',' ')
+		replacement = findcategory.group(0)
+	return {'category':category, 'replacement':replacement}
+
+def ExtractAssociation(line):
+	pattern = re.compile(u"([+])([^\\s\\.;,:]+)",re.U)
+	association = ''
+	replacement = ''
+	findassociation = pattern.search(line)
+	if findassociation != None:
+		association = findassociation.group(2).replace('_',' ')
+		replacement = findassociation.group(0)
+	return {'association':association, 'replacement':replacement}
+
+def ParseFile(mainfile):
+	resultlist = []
+	rf = codecs.open(mainfile, "r", "utf-8")
+	for line in rf:
+		resultlist.append(line)
+	rf.close()
+	return {'lines':resultlist}
+ 
+
+def saveCSV(path,lines):
+	names = ['Date','Category','Association','Title']
+	f = codecs.open(path, "w","utf-8")
+	csvwriter = UnicodeWriter(f,encoding="utf-8")
+	csvwriter.writerow(names)
+	
+	for line in lines:
+		newrow = []
+		result = ExtractDate(line)
+		newrow.append(result['date'])
+		rstr = result['replacement']
+		if len(rstr.strip())>0:
+			line = line.replace(rstr,'').replace('  ',' ').strip()
+		result = ExtractCategory(line)
+		newrow.append(result['category'])
+		rstr = result['replacement']
+		if len(rstr.strip())>0:
+			line = line.replace(rstr,'').replace('  ',' ').strip()
+		result = ExtractAssociation(line)
+		newrow.append(result['association'])
+		rstr = result['replacement']
+		if len(rstr.strip())>0:
+			line = line.replace(rstr,'').replace('  ',' ').strip()
+		newrow.append(line)
+		csvwriter.writerow(newrow)
+	f.close()
+	print 'File saved to: ' + path
+
+
+def myNewLine():
+	if platform.system() == 'Windows':
+		return "\r\n"
+	else:
+		return "\n"
+
+def isReturnFile(myfile):
+	if os.path.abspath(os.path.expanduser(myfile.strip())) != False:
+		return os.path.abspath(os.path.expanduser(myfile.strip()))
+	else:
+		print 'You can\'t save to that location'
+		sys.exit()
+
+def fileExists(value):
+	if os.path.isfile(os.path.expanduser(value.strip())):
+		return os.path.abspath(os.path.expanduser(value.strip()))
+	else:
+		print "I can't find the source file"
+		sys.exit()
+
+def main():
+	desc = 'Convert GTD Events to CSV'
+	p = optparse.OptionParser(description=desc)
+	p.add_option('--source', '-s', dest="source", help="File containing GTD Events/Tasks", default='', metavar='"<File Path>"')
+	p.add_option('--destination', '-d', dest="destination", help="Destination CSV file", default='', metavar='"<File Path>"')
+	(options, arguments) = p.parse_args();
+	
+	if len(options.source.strip())>0 and len(options.destination.strip())>0:
+		source = fileExists(options.source.strip())
+		destination = isReturnFile(options.destination.strip())
+		results = ParseFile(source)
+		saveCSV(destination,results['lines'])
+	else:
+		print 'You must specify the source and destination files'
+		sys.exit()
+
+if __name__ == '__main__':
+	main()
