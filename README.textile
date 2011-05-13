@@ -1,0 +1,26 @@
+h1. GTD to CSV
+ 
+This application converts GTD style events in text files to CSV so that it can be imported into programs like "Heap CRM":http://heap.wbpsystems.com and "Torch Project Management":http://torch.wbpsystems.com.
+ 
+h2. Options:
+ 
+|-s "&lt;File Path&gt;", --source="&lt;File Path&gt;"|File containing GTD events/tasks|
+|-d "&lt;File Path&gt;", --destination="&lt;File Path&gt;"|Destination CSV|
+ 
+h2. Example:
+ 
+<pre>
+./GTDtoCSV --source="myevents.txt" --destination="myevents.csv"
+</pre>
+ 
+h2. Installing:
+ 
+Installing GTDtoCSV is pretty easy. Because Macs and Linux already include Python, all you need to do is download the GTDtoCSV source, decompress it, and move it wherever you want. Of course, if you use GTDtoCSV a lot you might want to "add your installation location to your PATH variable":http://kb.wbpsystems.com/index.php/article/setting-your-path-variable.
+ 
+On Windows, you need to download "Python 2.x":http://www.python.org/download/ and install it before installing scheduler.  Or install the version of scheduler containing Python. 
+ 
+h2. Download:
+ 
+Windows (Zip file, Contains Python):"https://github.com/tazzben/GTDtoCSV/blob/master/dist/GTDtoCSV_dist.zip":https://github.com/tazzben/GTDtoCSV/blob/master/dist/GTDtoCSV_dist.zip?raw=true
+Windows (Zip file): "https://github.com/tazzben/GTDtoCSV/blob/master/dist/GTDtoCSV.zip":https://github.com/tazzben/GTDtoCSV/blob/master/dist/GTDtoCSV.zip?raw=true
+Mac/Linux/Etc (tar.gz file): "https://github.com/tazzben/GTDtoCSV/blob/master/dist/GTDtoCSV.tar.gz":https://github.com/tazzben/GTDtoCSV/blob/master/dist/GTDtoCSV.tar.gz?raw=true
