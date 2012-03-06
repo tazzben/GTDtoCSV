@@ -13,7 +13,10 @@ from UnicodeCSV import UTF8Recoder
 from UnicodeCSV import UnicodeReader
 from UnicodeCSV import UnicodeWriter
 import locale
-locale.setlocale(locale.LC_ALL, '' )
+locale.setlocale(locale.LC_ALL, '')
+
+if locale.getlocale()[0]==None:
+	locale.setlocale(locale.LC_ALL, 'en_US')
 
 def getDate(mstr):
 	try:
